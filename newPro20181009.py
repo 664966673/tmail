@@ -20,16 +20,18 @@ import json
 import random
 import datetime
 from lxml import etree
-from tools import getAtrr, getTime, ip,Shopstxt,Pjiatxt,getCanshu
+from tools import getAtrr, getTime, ip,Shopstxt,Pjiatxt,getCanshu, getNum
+from cookies import cookies
 
-# client = pymongo.MongoClient('192.168.0.24', 27701)
-# db = client.beehive
+client = pymongo.MongoClient('192.168.0.24', 27701)
+db = client.beehive
 
-client = pymongo.MongoClient('127.0.0.1', 27017)
-db = client.test
+# client = pymongo.MongoClient('127.0.0.1', 27017)
+# db = client.test
+cookie = random.choice(cookies)
 headers = {
 
-    'cookie': 't=dd11eb947bef185a4fed3208fa1996e0; lid=%E5%88%AB%E6%8A%A2%E6%88%91%E7%9A%84%E9%AA%A8%E5%A4%B4; _tb_token_=e353beeb0ea38; cookie2=1769010fbd11ef956a7c578f3f9e7bc9; hng=""; uc1=cookie16=UIHiLt3xCS3yM2h4eKHS9lpEOw%3D%3D&cookie21=UIHiLt3xSifiVqTH8o%2F0Qw%3D%3D&cookie15=U%2BGCWk%2F75gdr5Q%3D%3D&existShop=false&pas=0&cookie14=UoTfItCjhY%2BTbA%3D%3D&tag=8&lng=zh_CN; uc3=vt3=F8dByRqvPiu9qwhtIus%3D&id2=UoYY4HzALqv1Gg%3D%3D&nk2=0rWamFEWBzoitBU2&lg2=VFC%2FuZ9ayeYq2g%3D%3D; tracknick=%5Cu522B%5Cu62A2%5Cu6211%5Cu7684%5Cu9AA8%5Cu5934; _l_g_=Ug%3D%3D; unb=1763525159; lgc=%5Cu522B%5Cu62A2%5Cu6211%5Cu7684%5Cu9AA8%5Cu5934; cookie1=Bqqu%2BFQ2xmXE5KKUSsig6bRgPnYT%2FWXq2pkn3r8LOeU%3D; login=true; cookie17=UoYY4HzALqv1Gg%3D%3D; _nk_=%5Cu522B%5Cu62A2%5Cu6211%5Cu7684%5Cu9AA8%5Cu5934; uss=""; csg=d8ade8ed; skt=93325bba06580d02; cna=V2EmFFWEkVkCAXb5bDc9xJPn; _m_h5_tk=e77db747c89d2565032493426b1747d0_1539058142429; _m_h5_tk_enc=d6e60b3ef4145346065573db337dd94d; c=""; enc=KWxSAjXSv%2B%2FBPZpCbNR8DlRUEVFW9RvmZ6e94YkhbvM9DdHmG%2FfiPbHM5%2BtLCPFfgtpKLX%2Bpt1EV%2FVLzNc%2BqkA%3D%3D; otherx=e%3D1%26p%3D*%26s%3D0%26c%3D0%26f%3D0%26g%3D0%26t%3D0; x=__ll%3D-1%26_ato%3D0; whl=-1%260%260%260; isg=BHFxJi0sjrzvciKLsHvGNOShgP2nTbW1YfgmPlOGZThXepHMm6tAoA6UmE65sn0I',
+    'cookie': 'lid=%E5%88%AB%E6%8A%A2%E6%88%91%E7%9A%84%E9%AA%A8%E5%A4%B4; uss=""; cna=V2EmFFWEkVkCAXb5bDc9xJPn; _med=dw:1920&dh:1080&pw:1920&ph:1080&ist:0; otherx=e%3D1%26p%3D*%26s%3D0%26c%3D0%26f%3D0%26g%3D0%26t%3D0; x=__ll%3D-1%26_ato%3D0; _uab_collina=153904979742202522545786; sm4=430103; t=dd11eb947bef185a4fed3208fa1996e0; tracknick=%5Cu522B%5Cu62A2%5Cu6211%5Cu7684%5Cu9AA8%5Cu5934; lgc=%5Cu522B%5Cu62A2%5Cu6211%5Cu7684%5Cu9AA8%5Cu5934; _tb_token_=107e57843798; cookie2=1cef4ea64137f6f3c309923c37087eea; uc3=vt3=F8dByRquFlVnAofL%2B1M%3D&id2=UoYY4HzALqv1Gg%3D%3D&nk2=0rWamFEWBzoitBU2&lg2=VT5L2FSpMGV7TQ%3D%3D; _l_g_=Ug%3D%3D; ck1=""; unb=1763525159; cookie1=Bqqu%2BFQ2xmXE5KKUSsig6bRgPnYT%2FWXq2pkn3r8LOeU%3D; login=true; cookie17=UoYY4HzALqv1Gg%3D%3D; _nk_=%5Cu522B%5Cu62A2%5Cu6211%5Cu7684%5Cu9AA8%5Cu5934; csg=fcb49508; skt=d085c45e05f750e7; _umdata=E2AE90FA4E0E42DEF9D18637572CD3FBA9B62757D7DF25F613E8940E54E5AECE70B38FA3E599C1FDCD43AD3E795C914C0DCA837C7ACD2F4854149E4207993A13; _m_h5_tk=faa3c76149f7c5d90609e890febd67ed_1539162631569; _m_h5_tk_enc=6647087ba20ecc07cd5ce1ba1f9d1f56; tt=food.tmall.com; swfstore=169921; dnk=%5Cu522B%5Cu62A2%5Cu6211%5Cu7684%5Cu9AA8%5Cu5934; hng=CN%7Czh-CN%7CCNY%7C156; uc1=cookie15=VFC%2FuZ9ayeYq2g%3D%3D; sg=%E5%A4%B49e; res=scroll%3A1583*5575-client%3A1583*307-offset%3A1583*5575-screen%3A1600*900; pnm_cku822=098%23E1hvbQvUvbpvUpCkvvvvvjiPPschljEvPsFwAjljPmPvgjlEPLdwtjiEnL5ZzjrbPpGCvvpvvvvvvphvC9vhphvvvvyCvhAvgetKjXZpeEIaWDNBlLyzhbUfbzc6%2Bu6Xd5QXfaAKHd8rakS63b8rVut%2BCNoxdBKK5znbAWva5EAXJHLXSfpAhC3qVUcn%2B3mOVzIUkphvC9hvpyPOt8yCvv9vvhh5ao9WZqyCvm9vvhCvvvm2pvvvB9OvvUmXvvCVC9vv9ZUvvhOVvvmCb9vvB9OvvUhKRphvCvvvphm5vpvhvvCCBv%3D%3D; whl=-1%260%260%260; x5sec=7b22746d616c6c7365617263683b32223a223862346261383937393564303637323934336636343230303037653463666361434f2f7039743046454f323339624b44757458684f426f4d4d5463324d7a55794e5445314f547378227d; isg=BD4-RM_p6VRwXD1Sa_rBrY9wj1QsbFKcemkZB-hHlQF8i99lUAwjCZtqBxfis_oR',
     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/69.0.3497.100 Safari/537.36',
 
 }
@@ -37,14 +39,16 @@ headers = {
 # 拿到每一页的数据
 def get_pageList():
 
-    for d in range(1, 101):
+    for d in range(2, 101):
         # time.sleep(random.choice(range(1, 3)))
+        print(str(d) + "page")
         proxy = ip()
         url = 'http://list.tmall.com//m/search_items.htm?page_size=60&page_no='+str(d)+'&q=%BA%EC%BE%C6&style=g'
-        response = requests.get(url,headers = headers, proxies=proxy)
+        response = requests.get(url,headers = headers, proxies={'http':'27.209.167.77:4243'})
+        # response = requests.get(url, headers=headers, proxies=proxy)
         res = json.loads(response.text)
         get_content(res)
-        print(str(d)+"page")
+        print("---------------over--------------------------")
 
 #将页面数据进行
 def get_content(res):
@@ -62,8 +66,9 @@ def get_content(res):
         titles = pro_data['title']
         location = pro_data['location']
         prices = float(pro_data['price'])
-        trading = int(pro_data['sold'])
-        count = int(pro_data['comment_num'])
+        # trading = getNum(pro_data['sold'])
+        # count = getNum(pro_data['comment_num'])
+
         local_time = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         spider_time = "20181010"
         listlcon = pro_data['listIcon']
@@ -71,7 +76,8 @@ def get_content(res):
         time.sleep(random.choice(range(1,3)))
         get_proKey(detail_url)
         canshu  = get_proKey(detail_url)
-
+        trading = canshu['trading']
+        count = canshu['count']
         # 评价链接
         pjia = 'https://rate.tmall.com/list_detail_rate.htm?itemId=' + str(canshu['idd']) + '&spuId=' + str(canshu['at_prid']) + '&sellerId=' + shop_id + '&order=3&currentPage='
 
@@ -96,7 +102,7 @@ def get_content(res):
             'user_id': user_id, 'local_time': local_time, 'spider_time': spider_time
         }
         try:
-            db_list = db.liheng_copy
+            db_list = db.products_copys
             db_list.update_one({'_id': datas['_id']}, {'$set': dict(datas)}, upsert=True)
             print(_id + "***sucess-data***"+item_id)
             Pjiatxt(pjia)
@@ -119,7 +125,7 @@ def get_proKey(url):
 
         Pid =re.compile(r'id=(.*?)&skuId').findall(str(url))
         canchuFlag = getCanshu(Pid[0])
-        if canchuFlag == "":
+        if canchuFlag['flag'] == False:
             attr = res.xpath("//*[@id='J_AttrUL']/li//text()")
             pro_date = res.xpath("//*[@class='tb-validity']//text()")
             pro_date = "".join(pro_date)
@@ -129,9 +135,10 @@ def get_proKey(url):
         else:
             attribute = canchuFlag['attribute']
             production_date = canchuFlag['production_date']
-
-        canshu = {'attribute':attribute,'open_duration':open_duration, 'production_date':production_date,'at_prid':at_prid,'idd':idd}
-        return canshu
+        trading = canchuFlag['soldNums']
+        count = canchuFlag['commiteNums']
+        canshu = {'trading':trading,'count':count,'attribute':attribute,'open_duration':open_duration, 'production_date':production_date,'at_prid':at_prid,'idd':idd}
+        return  canshu
     except Exception as e:
         print("detail-faild("+url+")", e)
 

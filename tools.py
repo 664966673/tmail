@@ -129,15 +129,46 @@ def changeData(score, proportion):
     }
     return datas
 
+
+
+
+
+# 获取数字
+def getNum(value):
+    num = re.compile(r'(\d+)').findall(value)
+
+    if "万" in value :
+        num = ".".join(num)
+        num = float(num)*10000
+
+        return int(num)
+    elif len(num) ==0:
+        num = 0
+        return num
+    else:
+        num = int(num[0])
+        return num
+
 # 通过json链接获取产品参数
 def getCanshu(Pid):
     r = requests.get(
         "http://h5api.m.taobao.com/h5/mtop.taobao.detail.getdetail/6.0/?jsv=2.4.8&appKey=12574478&api=mtop.taobao.detail.getdetail&v=6.0&dataType=jsonp&ttid=2017%40taobao_h5_6.6.0&AntiCreep=true&type=jsonp&callback=mtopjsonp1&data=%7B%22itemNumId%22%3A%22"+str(Pid)+"%22%7D")
     res = r.text
     att = re.compile(r'"baseProps":(.*?)}]},').findall(res)
+    soldNums = re.compile(r'\\\"sellCount\\\":\\\"(.*?)\\\"\,').findall(res)
+    commiteNums =re.compile(r'\"commentCount\":\"(.*?)\"\,').findall(res)
+
+    if len(soldNums)!= 0:
+        soldNums = getNum(soldNums[0])
+    else:
+        soldNums = 0
+    if len(commiteNums)!= 0:
+        commiteNums = getNum(commiteNums[0])
+    else:
+        commiteNums = 0
+
     if len(att)!= 0:
         att = att[0].replace(']', '').replace('[', '')
-        # att = att.replace('},', '}&')
         a = eval(att)
         attrs = []
         for x in a:
@@ -153,11 +184,11 @@ def getCanshu(Pid):
                 }
             attrs.append(x)
         data = {
-            'attribute':attrs,'production_date':production_date
+            'attribute':attrs,'production_date':production_date,'soldNums':soldNums,
+        'commiteNums':commiteNums,'flag':True
         }
         return data
     else:
-        data = ""
-        print(data)
+        data = {'soldNums':soldNums,
+        'commiteNums':commiteNums, 'flag':False}
         return data
-
