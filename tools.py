@@ -128,3 +128,36 @@ def changeData(score, proportion):
 
     }
     return datas
+
+# 通过json链接获取产品参数
+def getCanshu(Pid):
+    r = requests.get(
+        "http://h5api.m.taobao.com/h5/mtop.taobao.detail.getdetail/6.0/?jsv=2.4.8&appKey=12574478&api=mtop.taobao.detail.getdetail&v=6.0&dataType=jsonp&ttid=2017%40taobao_h5_6.6.0&AntiCreep=true&type=jsonp&callback=mtopjsonp1&data=%7B%22itemNumId%22%3A%22"+str(Pid)+"%22%7D")
+    res = r.text
+    att = re.compile(r'"baseProps":(.*?)}]},').findall(res)
+    if len(att)!= 0:
+        att = att[0].replace(']', '').replace('[', '')
+        # att = att.replace('},', '}&')
+        a = eval(att)
+        attrs = []
+        for x in a:
+            # attrs.append(x)
+            print("使用了详情页的json")
+            if x['key'] == "生产日期":
+                production_date = x['value']
+                production_date = production_date.replace('年','-').replace('月','-').replace('日','')
+                production_date = getTime(production_date)
+            else:
+                production_date = {
+                    "from_time": "", "end_time": ""
+                }
+            attrs.append(x)
+        data = {
+            'attribute':attrs,'production_date':production_date
+        }
+        return data
+    else:
+        data = ""
+        print(data)
+        return data
+

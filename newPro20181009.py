@@ -20,7 +20,7 @@ import json
 import random
 import datetime
 from lxml import etree
-from tools import getAtrr, getTime, ip,Shopstxt,Pjiatxt
+from tools import getAtrr, getTime, ip,Shopstxt,Pjiatxt,getCanshu
 
 # client = pymongo.MongoClient('192.168.0.24', 27701)
 # db = client.beehive
@@ -37,7 +37,7 @@ headers = {
 # 拿到每一页的数据
 def get_pageList():
 
-    for d in range(6, 101):
+    for d in range(1, 101):
         # time.sleep(random.choice(range(1, 3)))
         proxy = ip()
         url = 'http://list.tmall.com//m/search_items.htm?page_size=60&page_no='+str(d)+'&q=%BA%EC%BE%C6&style=g'
@@ -76,10 +76,7 @@ def get_content(res):
         pjia = 'https://rate.tmall.com/list_detail_rate.htm?itemId=' + str(canshu['idd']) + '&spuId=' + str(canshu['at_prid']) + '&sellerId=' + shop_id + '&order=3&currentPage='
 
         attribute = canshu['attribute']
-        # if len(attribute) != 0:
-        #     att = "".join(attribute)
-        # else:
-        #     att = ""
+
         if "进口" in listlcon or "进口" in titles:
             entrance = "原瓶进口"
         else:
@@ -99,7 +96,7 @@ def get_content(res):
             'user_id': user_id, 'local_time': local_time, 'spider_time': spider_time
         }
         try:
-            db_list = db.liheng
+            db_list = db.liheng_copy
             db_list.update_one({'_id': datas['_id']}, {'$set': dict(datas)}, upsert=True)
             print(_id + "***sucess-data***"+item_id)
             Pjiatxt(pjia)
@@ -118,19 +115,21 @@ def get_proKey(url):
         req = response.headers
         at_prid = req['at_prid']
         idd = req['at_itemid']
-
-        attr = res.xpath("//*[@class='J_subAttrList']/li//text()")
-        pro_date = res.xpath("//*[@class='tb-validity']//text()")
         open_duration = res.xpath("//span[@class='tm-shop-age-content']/text()")
-        pro_date = "".join(pro_date)
 
-        attribute = getAtrr(attr)
+        Pid =re.compile(r'id=(.*?)&skuId').findall(str(url))
+        canchuFlag = getCanshu(Pid[0])
+        if canchuFlag == "":
+            attr = res.xpath("//*[@id='J_AttrUL']/li//text()")
+            pro_date = res.xpath("//*[@class='tb-validity']//text()")
+            pro_date = "".join(pro_date)
 
-        foodProDate = re.compile(r'"foodProDate":(.*?),').findall(htmlPage)
-        if len(foodProDate) !=0:
-            production_date = getTime(foodProDate)
-        else:
+            attribute = getAtrr(attr)
             production_date = getTime(pro_date)
+        else:
+            attribute = canchuFlag['attribute']
+            production_date = canchuFlag['production_date']
+
         canshu = {'attribute':attribute,'open_duration':open_duration, 'production_date':production_date,'at_prid':at_prid,'idd':idd}
         return canshu
     except Exception as e:
@@ -139,5 +138,6 @@ def get_proKey(url):
 # get_proKey(url = 'https://detail.tmall.com/item.htm?id=43724784272&skuId=4611686062152172176&areaId=440300&user_id=2380530097&cat_id=2&is_b=1')
 
 if __name__ == "__main__":
-    # get_pageList()
-    get_proKey(url="https://detail.tmall.hk/hk/item.htm?id=540226087282&skuId=3202944271278&areaId=440300&user_id=2630035235&cat_id=2&is_b=1")
+    get_pageList()
+    # get_proKey(url="https://detail.tmall.com/item.htm?id=524510363572&skuId=3202944271278&areaId=440300&user_id=2630035235&cat_id=2&is_b=1")
+    # get_proKey(url="https://detail.tmall.com/item.htm?id=540226087282&skuId=3202944271278&areaId=440300&user_id=2630035235&cat_id=2&is_b=1")
