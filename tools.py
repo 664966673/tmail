@@ -4,7 +4,7 @@ import requests
 from lxml import etree
 import random
 import time
-
+import json
 # 存储商店链接
 def Shopstxt(url):
     with open('shop_url.txt', 'a+') as f:
@@ -154,7 +154,7 @@ def getCanshu(Pid):
     r = requests.get(
         "http://h5api.m.taobao.com/h5/mtop.taobao.detail.getdetail/6.0/?jsv=2.4.8&appKey=12574478&api=mtop.taobao.detail.getdetail&v=6.0&dataType=jsonp&ttid=2017%40taobao_h5_6.6.0&AntiCreep=true&type=jsonp&callback=mtopjsonp1&data=%7B%22itemNumId%22%3A%22"+str(Pid)+"%22%7D")
     res = r.text
-    att = re.compile(r'"baseProps":(.*?)}]},').findall(res)
+    att = re.compile(r'"baseProps":(.*?)]},{"itemId":').findall(res)
     soldNums = re.compile(r'\\\"sellCount\\\":\\\"(.*?)\\\"\,').findall(res)
     commiteNums =re.compile(r'\"commentCount\":\"(.*?)\"\,').findall(res)
 
@@ -169,11 +169,12 @@ def getCanshu(Pid):
 
     if len(att)!= 0:
         att = att[0].replace(']', '').replace('[', '')
-        a = eval(att)
+        att = eval(att)
         attrs = []
-        for x in a:
+        # at = json.loads(att)
+        for x in att:
             # attrs.append(x)
-            print("使用了详情页的json")
+
             if x['key'] == "生产日期":
                 production_date = x['value']
                 production_date = production_date.replace('年','-').replace('月','-').replace('日','')
@@ -183,6 +184,7 @@ def getCanshu(Pid):
                     "from_time": "", "end_time": ""
                 }
             attrs.append(x)
+        print("使用了详情页的json")
         data = {
             'attribute':attrs,'production_date':production_date,'soldNums':soldNums,
         'commiteNums':commiteNums,'flag':True
@@ -192,3 +194,6 @@ def getCanshu(Pid):
         data = {'soldNums':soldNums,
         'commiteNums':commiteNums, 'flag':False}
         return data
+
+#
+# getCanshu(Pid="565265766576")
