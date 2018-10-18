@@ -26,12 +26,12 @@ def getAtrr(prolist):
     attribute = []
     if len(prolist) != 0:
         for each in prolist:
-            each = "".join(each.split())
+            each = " ".join(each.split())
             each = each.split('：')
             if len(each) == 1:
                 each = each[0].split(':')
             # print(each)
-            each = {"key": each[0], "value": each[1]}
+            each = {"key": each[0], "value": each[1].strip()}
             attribute.append(each)
         for x in attribute:
             # print(x['key'])

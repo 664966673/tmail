@@ -161,6 +161,6 @@ def get_proKey(url):
 # get_proKey(url = 'https://detail.tmall.com/item.htm?id=43724784272&skuId=4611686062152172176&areaId=440300&user_id=2380530097&cat_id=2&is_b=1')
 
 if __name__ == "__main__":
-    Porducts()
-    # get_proKey(url="https://detail.tmall.com/item.htm?id=566930662860&areaId=440300&user_id=3430748706&cat_id=2&is_b=1")
+    # Porducts()
+    get_proKey(url="https://detail.tmall.com/item.htm?id=520985736485&skuId=4611686539413124389&areaId=440300&user_id=509138323&cat_id=2&is_b=1")
     # get_proKey(url="https://detail.tmall.com/item.htm?id=540226087282&skuId=3202944271278&areaId=440300&user_id=2630035235&cat_id=2&is_b=1")
